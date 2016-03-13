@@ -10,15 +10,20 @@ import UIKit
 import MBProgressHUD
 
 // Main ViewController
-class RepoResultsViewController: UIViewController {
+class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
+    @IBOutlet weak var tableView: UITableView!
+    
     var searchBar: UISearchBar!
     var searchSettings = GithubRepoSearchSettings()
 
     var repos: [GithubRepo]!
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.dataSource = self
+        tableView.delegate = self
 
         // Initialize the UISearchBar
         searchBar = UISearchBar()
@@ -30,7 +35,72 @@ class RepoResultsViewController: UIViewController {
 
         // Perform the first search when the view controller first loads
         doSearch()
+        self.tableView.reloadData()
+
     }
+    
+        func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+            if repos != nil {
+                return repos!.count
+            }
+            else {
+                return 0
+            }
+        }
+        func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+            let cell = tableView.dequeueReusableCellWithIdentifier("repoCell", forIndexPath: indexPath) as! RepoCell
+            let repoPost = repos![indexPath.row]
+//            cell.captionLabel.text = media["caption"] as? String
+//            let userImageFile = media["media"] as! PFFile
+//            userImageFile.getDataInBackgroundWithBlock {
+//                (imageData: NSData?, error: NSError?) -> Void in
+//                if error == nil {
+//                    if let imageData = imageData {
+//                        let image = UIImage(data:imageData)
+//                        cell.postImage.image = image
+//                    }
+                }
+            }
+            return cell
+        }
+    
+//    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        if mediaArr != nil {
+//            return mediaArr!.count
+//        }
+//        else {
+//            return 0
+//        }
+//    }
+//    
+//    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+//        let cell = tableView.dequeueReusableCellWithIdentifier("PostCell", forIndexPath: indexPath) as! PostCell
+//        let media = mediaArr![indexPath.row]
+//        cell.captionLabel.text = media["caption"] as? String
+//        let userImageFile = media["media"] as! PFFile
+//        userImageFile.getDataInBackgroundWithBlock {
+//            (imageData: NSData?, error: NSError?) -> Void in
+//            if error == nil {
+//                if let imageData = imageData {
+//                    let image = UIImage(data:imageData)
+//                    cell.postImage.image = image
+//                }
+//            }
+//        }
+//        return cell
+//    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     // Perform the search.
     private func doSearch() {
@@ -43,6 +113,7 @@ class RepoResultsViewController: UIViewController {
             // Print the returned repositories to the output window
             for repo in newRepos {
                 print(repo)
+                self.repos = newRepos
             }   
 
             MBProgressHUD.hideHUDForView(self.view, animated: true)
