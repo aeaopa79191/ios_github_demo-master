@@ -128,3 +128,9 @@ class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableV
         
 }
 
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let navController = segue.destinationViewController as! UINavigationController
+        let vc = navController.topViewController as! SearchSettingsViewController
+       // vc.settings =   // ... Search Settings ...
+}
+
