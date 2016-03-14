@@ -8,15 +8,16 @@
 
 import UIKit
 import MBProgressHUD
+import AFNetworking
+
 
 // Main ViewController
-class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
+class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
-    
     var searchBar: UISearchBar!
     var searchSettings = GithubRepoSearchSettings()
-
+    
     var repos: [GithubRepo]!
     
 
@@ -35,115 +36,95 @@ class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableV
 
         // Perform the first search when the view controller first loads
         doSearch()
-        self.tableView.reloadData()
 
     }
     
-        func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            if repos != nil {
-                return repos!.count
-            }
-            else {
-                return 0
-            }
-        }
-        func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-            let cell = tableView.dequeueReusableCellWithIdentifier("repoCell", forIndexPath: indexPath) as! RepoCell
-            let repoPost = repos![indexPath.row]
-//            cell.captionLabel.text = media["caption"] as? String
-//            let userImageFile = media["media"] as! PFFile
-//            userImageFile.getDataInBackgroundWithBlock {
-//                (imageData: NSData?, error: NSError?) -> Void in
-//                if error == nil {
-//                    if let imageData = imageData {
-//                        let image = UIImage(data:imageData)
-//                        cell.postImage.image = image
-//                    }
-                }
-            }
-            return cell
-        }
     
-//    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        if mediaArr != nil {
-//            return mediaArr!.count
-//        }
-//        else {
-//            return 0
-//        }
-//    }
-//    
-//    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-//        let cell = tableView.dequeueReusableCellWithIdentifier("PostCell", forIndexPath: indexPath) as! PostCell
-//        let media = mediaArr![indexPath.row]
-//        cell.captionLabel.text = media["caption"] as? String
-//        let userImageFile = media["media"] as! PFFile
-//        userImageFile.getDataInBackgroundWithBlock {
-//            (imageData: NSData?, error: NSError?) -> Void in
-//            if error == nil {
-//                if let imageData = imageData {
-//                    let image = UIImage(data:imageData)
-//                    cell.postImage.image = image
-//                }
-//            }
-//        }
-//        return cell
-//    }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    // Perform the search.
     private func doSearch() {
-
+        
         MBProgressHUD.showHUDAddedTo(self.view, animated: true)
-
+        
         // Perform request to GitHub API to get the list of repositories
         GithubRepo.fetchRepos(searchSettings, successCallback: { (newRepos) -> Void in
-
+            
             // Print the returned repositories to the output window
             for repo in newRepos {
                 print(repo)
                 self.repos = newRepos
-            }   
-
+                self.tableView.reloadData()
+            }
             MBProgressHUD.hideHUDForView(self.view, animated: true)
             }, error: { (error) -> Void in
                 print(error)
         })
     }
+
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier("RepoCell", forIndexPath: indexPath) as! RepoCell
+        let subRepo = repos![indexPath.row]
+        
+        cell.repoNameLabel.text = subRepo.name
+        cell.userNameLabel.text = subRepo.ownerHandle
+        
+        //convert int to string
+        let forkCount = subRepo.forks
+        cell.forkLabel.text = String(format: "%d", forkCount!)
+        
+        let starsCount = subRepo.stars
+        cell.starLabel.text = String(format: "%d", starsCount!)
+        
+        let avatarURL = NSURL(string: subRepo.ownerAvatarURL!)
+        cell.userImage.setImageWithURL(avatarURL!)
+        
+        cell.descriptionLabel.text = subRepo.repoDescription
+        
+        return cell
+    }
+    
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if let subRepo = repos {
+            return subRepo.count
+        }else{
+            return 0
+        }
+    }
 }
+
+
 
 // SearchBar methods
-extension RepoResultsViewController: UISearchBarDelegate {
-
-    func searchBarShouldBeginEditing(searchBar: UISearchBar) -> Bool {
-        searchBar.setShowsCancelButton(true, animated: true)
-        return true;
-    }
-
-    func searchBarShouldEndEditing(searchBar: UISearchBar) -> Bool {
-        searchBar.setShowsCancelButton(false, animated: true)
-        return true;
-    }
-
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        searchBar.text = ""
-        searchBar.resignFirstResponder()
-    }
-
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        searchSettings.searchString = searchBar.text
-        searchBar.resignFirstResponder()
-        doSearch()
-    }
+    extension RepoResultsViewController: UISearchBarDelegate {
+        
+        func searchBarShouldBeginEditing(searchBar: UISearchBar) -> Bool {
+            searchBar.setShowsCancelButton(true, animated: true)
+            return true;
+        }
+        
+        func searchBarShouldEndEditing(searchBar: UISearchBar) -> Bool {
+            searchBar.setShowsCancelButton(false, animated: true)
+            return true;
+        }
+        
+        func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+            searchBar.text = ""
+            searchBar.resignFirstResponder()
+        }
+        
+        func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+            searchSettings.searchString = searchBar.text
+            searchBar.resignFirstResponder()
+            doSearch()
+        }
+        
+//        override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+//            let navController = segue.destinationViewController as! UINavigationController
+//            let vc = navController.topViewController as! SearchSettingsViewController
+//            //vc.minimumStars = slider.value  // ... Search Settings ...
+//        }
+        
 }
+

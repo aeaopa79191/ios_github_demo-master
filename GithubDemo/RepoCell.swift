@@ -10,6 +10,19 @@ import UIKit
 
 class RepoCell: UITableViewCell {
 
+    @IBOutlet weak var repoNameLabel: UILabel!
+    
+    @IBOutlet weak var userNameLabel: UILabel!
+    
+    @IBOutlet weak var starLabel: UILabel!
+    
+    @IBOutlet weak var forkLabel: UILabel!
+    
+    @IBOutlet weak var userImage: UIImageView!
+    
+    @IBOutlet weak var descriptionLabel: UILabel!
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
