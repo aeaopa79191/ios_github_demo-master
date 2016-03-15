@@ -10,6 +10,10 @@ import UIKit
 import MBProgressHUD
 import AFNetworking
 
+protocol SettingsPresentingViewControllerDelegate: class {
+    func didSaveSettings(settings: GithubRepoSearchSettings)
+    func didCancelSettings()
+}
 
 // Main ViewController
 class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -132,5 +136,6 @@ class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableV
         let navController = segue.destinationViewController as! UINavigationController
         let vc = navController.topViewController as! SearchSettingsViewController
        // vc.settings =   // ... Search Settings ...
+        vc.delegate = self
 }
 

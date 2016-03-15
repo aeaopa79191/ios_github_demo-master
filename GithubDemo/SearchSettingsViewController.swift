@@ -11,22 +11,52 @@ import UIKit
 class SearchSettingsViewController: UIViewController {
 
     weak var delegate: SettingsPresentingViewControllerDelegate?
+    
+    @IBOutlet weak var starLabel: UILabel!
+    @IBOutlet weak var starSlider: UISlider!
+    
+    var settings: GithubRepoSearchSettings!
+
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        starLabel.text = "Minimum number of stars = \(settings.minStars)"
+        starSlider.value = Float(settings.minStars)
         // Do any additional setup after loading the view.
     }
 
+    override func viewDidAppear(animated: Bool) {
+        starLabel.text = "Minimum number of stars = \(settings.minStars)"
+        starSlider.value = Float(settings.minStars)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
-    protocol SettingsPresentingViewControllerDelegate: class {
-        func didSaveSettings(settings: GithubRepoSearchSettings)
-        func didCancelSettings()
+
+    
+    @IBAction func onValueChanged(sender: UISlider) {
+        let roundedValue: Int = Int(round(sender.value))
+        sender.value = Float(roundedValue)
+        starLabel.text = "Minimum number of stars = \(roundedValue)"
     }
+    
+    @IBAction func saveButtonTapped(sender: UIBarButtonItem) {
+        settings.minStars = Int(starSlider.value)
+        self.delegate?.didSaveSettings(settings)
+      //  print(settings.minStars)
+    }
+    
+    
+    @IBAction func cancelButtonTapped(sender: UIBarButtonItem) {
+        self.delegate?.didCancelSettings()
+        dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    
 
     /*
     // MARK: - Navigation
