@@ -23,6 +23,8 @@ class SearchSettingsViewController: UIViewController {
         super.viewDidLoad()
         starLabel.text = "Minimum number of stars = \(settings.minStars)"
         starSlider.value = Float(settings.minStars)
+        starSlider.minimumValue = 0
+        starSlider.maximumValue = 1000
         // Do any additional setup after loading the view.
     }
 

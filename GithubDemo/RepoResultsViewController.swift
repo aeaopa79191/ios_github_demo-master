@@ -96,13 +96,6 @@ class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableV
             return 0
         }
     }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let navController = segue.destinationViewController as! UINavigationController
-        let vc = navController.topViewController as! SearchSettingsViewController
-        vc.settings = searchSettings// ... Search Settings ...
-        vc.delegate = self
-    }
 }
 
 
@@ -129,7 +122,25 @@ class RepoResultsViewController: UIViewController, UITableViewDelegate, UITableV
             searchSettings.searchString = searchBar.text
             searchBar.resignFirstResponder()
             doSearch()
-        }}
+        }
+
+        override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+            let navController = segue.destinationViewController as! UINavigationController
+            let vc = navController.topViewController as! SearchSettingsViewController
+            vc.settings = searchSettings// ... Search Settings ...
+            vc.delegate = self
+        }
+        
+        func didSaveSettings(settings: GithubRepoSearchSettings) {
+            searchSettings = settings
+            tableView.reloadData()
+        }
+        
+        func didCancelSettings() {
+        }
+
+
+}
 
 
 //override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
